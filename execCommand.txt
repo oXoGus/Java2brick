@@ -1,0 +1,1 @@
+mvn exec:java -Dexec.mainClass="fr.univ_eiffel.java2brick.App"
