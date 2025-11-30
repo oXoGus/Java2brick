@@ -8,15 +8,16 @@ public class App {
     public static void main(String[] args) throws Exception {
 
         // we verify that all the args are present
-        if (args.length < 3) {
-            throw new IllegalArgumentException("you must enter the paving code height and width of the paving in args");
+        if (args.length < 4) {
+            throw new IllegalArgumentException(
+                    "you must enter the path to the paving folder, the paving code height and width of the paving in args");
         }
 
         // we define the args
-        String pavingCode = args[0];
+        String pavingCode = args[1];
 
         // were all the paving are stored
-        String pavingFolderPath = "../img2brick/pavings/" + pavingCode;
+        String pavingFolderPath = args[0] + "/" + pavingCode;
 
         // we connect to the database
         DataBase db = new DataBase();
@@ -28,8 +29,8 @@ public class App {
             throw new IllegalArgumentException("the paving code : " + pavingCode + " doesn't exist in the database");
         }
 
-        int width = Integer.parseInt(args[1]);
-        int height = Integer.parseInt(args[2]);
+        int width = Integer.parseInt(args[2]);
+        int height = Integer.parseInt(args[3]);
 
         // we verify the directory containing the paving is created
 

@@ -15,7 +15,7 @@ import fr.univ_eiffel.java2brick.ColorInterpolator.Interpolator;
 
 public class Image {
 
-    private final List<String> IMAGE_TYPE_ACCEPTED = List.of("png", "jpeg", "webp");
+    private final List<String> IMAGE_TYPE_ACCEPTED = List.of("png", "jpeg");
 
     private BufferedImage image;
     private String imageType;
@@ -70,7 +70,7 @@ public class Image {
 
         verifyNewDimensions(newHeight, newWidth);
 
-        if (newWidth == 0 || newHeight == 0) {
+        if (newWidth <= 0 || newHeight <= 0) {
             throw new IllegalStateException("the image cannot be reduced ");
         }
 

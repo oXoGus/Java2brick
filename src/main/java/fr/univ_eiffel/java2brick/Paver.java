@@ -76,7 +76,7 @@ public class Paver {
         System.out.println("LEGO saved!");
     }
 
-    private void getPavingData(String outputPavingFilePath, List<Brick> stock) {
+    private void getPavingData(String outputPavingFilePath, List<Brick> stock) throws Exception {
 
         try {
             BufferedReader f = new BufferedReader(new FileReader(outputPavingFilePath));
@@ -92,6 +92,7 @@ public class Paver {
             f.close();
         } catch (IOException e) {
             System.out.println("Error during the read of the paving file : " + outputPavingFilePath);
+            throw new Exception(); // we stop the program
         }
     }
 
