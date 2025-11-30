@@ -93,8 +93,12 @@ public class App {
         // we write the paving preview
         String pavingPreviewFilePath = pavingFolderPath + "/paving-preview.png";
 
+        System.out.println("Creating the preview image...");
+
         // of the same size of the compressed image
         paving.writePreviewImage(pavingPreviewFilePath, height, width);
+
+        System.out.print("Preview image created!");
 
         db.free();
 

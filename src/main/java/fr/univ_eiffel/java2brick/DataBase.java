@@ -7,6 +7,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
 
@@ -74,19 +75,48 @@ public class DataBase {
         return res.getString(1);
     }
 
-    public void insertPavingDetail(String pavingCode, BrickPosition brickPosition) throws SQLException {
+    public void insertPavingDetail(String pavingCode, List<BrickPosition> brickPositions) throws SQLException {
         Objects.requireNonNull(pavingCode);
-        Objects.requireNonNull(brickPosition);
+        Objects.requireNonNull(brickPositions);
 
         PreparedStatement req = conn.prepareStatement(
                 "INSERT INTO paving_detail (paving_code, brick_code, x, y, direction, price) VALUES (?, ?, ?, ?, ?, ?)");
-        req.setString(1, pavingCode);
-        req.setString(2, brickPosition.brick().getBrickCode());
-        req.setInt(3, brickPosition.x());
-        req.setInt(4, brickPosition.y());
-        req.setInt(5, brickPosition.direction());
-        req.setInt(6, brickPosition.brick().price());
-        req.execute();
+
+        // we use a batch to regroup some of the request
+        // we sub divide the batch to update the progress bar
+
+        int brickPositionsSize = brickPositions.size();
+        int batchSize = 200;
+
+        int c = 0;
+
+        for (BrickPosition brickPosition : brickPositions) {
+
+            req.setString(1, pavingCode);
+            req.setString(2, brickPosition.brick().getBrickCode());
+            req.setInt(3, brickPosition.x());
+            req.setInt(4, brickPosition.y());
+            req.setInt(5, brickPosition.direction());
+            req.setInt(6, brickPosition.brick().price());
+
+            req.addBatch();
+
+            c++;
+
+            if (c % batchSize == 0) {
+                req.executeBatch();
+
+                System.out.printf("Saving your LEGO... %.2f%%\n", ((double) c / brickPositionsSize) * 100);
+            }
+        }
+
+        // we insert the last brick position
+        if (c % batchSize != 0) {
+            req.executeBatch();
+
+            System.out.printf("Saving your LEGO... %.2f%%\n", ((double) c / brickPositionsSize) * 100);
+        }
+
     }
 
     public void free() throws SQLException {

@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,15 +42,19 @@ public class Paver {
                 fileImageTextPath,
                 outputPavingFilePath);
 
-        System.out.println("C programm started");
-
         // we start the program
         Process process = processBuilder.start();
 
+        // to display the errors of the C program
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+            String printedLine;
+            while ((printedLine = reader.readLine()) != null) {
+                System.out.println(printedLine);
+            }
+        }
+
         // we wait until the program is finished
         int exitCode = process.waitFor();
-
-        System.out.println("C programm finished");
 
         if (exitCode == 1) {
 
@@ -60,11 +65,15 @@ public class Paver {
 
         this.brickPositions = new ArrayList<>();
 
+        System.out.println("Saving your LEGO...");
+
         // we need the stock to get the price of each brick
         getPavingData(outputPavingFilePath, stock);
 
         // we insert the paving into the database;
         insertPavingIntoDataBase();
+
+        System.out.println("LEGO saved!");
     }
 
     private void getPavingData(String outputPavingFilePath, List<Brick> stock) {
@@ -274,10 +283,7 @@ public class Paver {
     }
 
     private void insertPavingIntoDataBase() throws SQLException {
-
-        // we insert each brickPosition one by one with the paving code
-        for (BrickPosition brickPosition : brickPositions) {
-            db.insertPavingDetail(pavingCode, brickPosition);
-        }
+        // we let the database handle the requests
+        db.insertPavingDetail(pavingCode, brickPositions);
     }
 }
