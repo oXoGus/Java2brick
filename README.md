@@ -24,3 +24,6 @@ Cette image sera ensuite affichée par le PHP à l'utilisateur sur le site.
 - Pour les données de test, vous pouvez vous servir du dossier `testPavings` avec le code de pavage `692c6885ae7811.23917055`.
 - Si vous voulez tester avec une nouvelle image, vous pouvez retirer la vérification dans la base de données du pavage et ajouter un nouveau dossier dans `testPavings` contenant l'image que vous voulez transformer, renommée en `original-image`.
 - Vous pouvez ensuite voir le résultat dans votre dossier ajouté en regardant l'image `paving-preview`.
+
+- pour garder le ratio sur l'image de test vous pouvez exécuter `java -jar target/Java2brick-1.0-SNAPSHOT.jar testPavings 692c6885ae7811.23917055 49 74`
+- vous pouvez aussi essayer directement sur le site [http://81.64.255.185:9876]
