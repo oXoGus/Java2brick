@@ -17,7 +17,9 @@ import javax.imageio.ImageIO;
 public class Paver {
 
     private final int NUM_BRICK_POS_PROPERTIES = 4;
-    private final int SUB_BRICK_PREVIEW_IMAGE_SIZE = 30;
+    private final int SUB_BRICK_PREVIEW_IMAGE_SIZE = 100;
+    private final int CIRCLE_BORDER_SIZE = 1;
+    private final int SHADOW_CIRCLE_CENTER_PADDING = (int) (SUB_BRICK_PREVIEW_IMAGE_SIZE * 0.08);
 
     private final String pavingCode;
 
@@ -71,7 +73,7 @@ public class Paver {
         getPavingData(outputPavingFilePath, stock);
 
         // we insert the paving into the database;
-        insertPavingIntoDataBase();
+        // insertPavingIntoDataBase();
 
         System.out.println("LEGO saved!");
     }
@@ -198,7 +200,13 @@ public class Paver {
         Color brickColor = brickPosition.brick().getColor();
 
         // the circle in the middle will be slightly lighter than the brick color
-        int circleColor = brickColor.brighter().getRGB();
+        int circleColor;
+        if (brickColor.equals(Color.WHITE)) {
+            // to see the whiteaa
+            circleColor = new Color(240, 240, 240).getRGB();
+        } else {
+            circleColor = brickColor.brighter().getRGB();
+        }
 
         // the edge of the brick (to see the delimitation of the brick)
         // will be darker than the brick color
@@ -206,11 +214,17 @@ public class Paver {
 
         int brickColorInt = brickColor.getRGB();
 
-        double circleCenterX = SUB_BRICK_PREVIEW_IMAGE_SIZE / 2;
-        double circleCenterY = SUB_BRICK_PREVIEW_IMAGE_SIZE / 2;
+        double circleCenterX = SUB_BRICK_PREVIEW_IMAGE_SIZE / 2 + SHADOW_CIRCLE_CENTER_PADDING / 2;
+        double circleCenterY = SUB_BRICK_PREVIEW_IMAGE_SIZE / 2 - SHADOW_CIRCLE_CENTER_PADDING / 2;
+
+        double shadowCircleCenterX = circleCenterX - SHADOW_CIRCLE_CENTER_PADDING;
+        double shadowCircleCenterY = circleCenterY + SHADOW_CIRCLE_CENTER_PADDING;
 
         // circle size
-        double circleRadius = SUB_BRICK_PREVIEW_IMAGE_SIZE / 4;
+        double circleRadius = SUB_BRICK_PREVIEW_IMAGE_SIZE / 4 + CIRCLE_BORDER_SIZE;
+
+        // the shadow has the same radius
+        double shadowCircleRadius = circleRadius;
 
         // the sub brick is
         for (int subY = 0; subY < SUB_BRICK_PREVIEW_IMAGE_SIZE; subY++) {
@@ -223,12 +237,25 @@ public class Paver {
                 double distanceFromCenter = Math
                         .sqrt(Math.pow(subX - circleCenterX, 2) + Math.pow(subY - circleCenterY, 2));
 
+                double distanceFromShadowCenter = Math
+                        .sqrt(Math.pow(subX - shadowCircleCenterX, 2) + Math.pow(subY - shadowCircleCenterY, 2));
+
                 // if the current pixel is inside the circle radius
-                if (distanceFromCenter < circleRadius) {
+                if (distanceFromCenter < circleRadius - CIRCLE_BORDER_SIZE) {
 
                     // color of the the circle
                     pixelColor = circleColor;
+                } else if (distanceFromCenter < circleRadius) {
+                    // circle border
+                    pixelColor = borderColor;
+
+                } else if (distanceFromShadowCenter < shadowCircleRadius) {
+
+                    // the circle shadow
+                    pixelColor = borderColor;
                 } else {
+
+                    // the brick color
                     pixelColor = brickColorInt;
                 }
 
@@ -252,7 +279,6 @@ public class Paver {
 
             }
         }
-
     }
 
     private void writeBrick(BrickPosition brickPosition, BufferedImage previewImage) {

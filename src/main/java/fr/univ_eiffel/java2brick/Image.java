@@ -68,7 +68,7 @@ public class Image {
 
     public void compress(int newHeight, int newWidth, Interpolator interpolator) {
 
-        verifyNewDimensions(newHeight, newWidth);
+        // verifyNewDimensions(newHeight, newWidth);
 
         if (newWidth <= 0 || newHeight <= 0) {
             throw new IllegalStateException("the image cannot be reduced ");
@@ -101,7 +101,7 @@ public class Image {
     }
 
     private void compressImage(int newHeight, int newWidth, Interpolator interpolator) {
-        verifyNewDimensions(newHeight, newWidth);
+        // verifyNewDimensions(newHeight, newWidth);
 
         if (newWidth == 0 || newHeight == 0) {
             throw new IllegalStateException("the image cannot be reduced ");
